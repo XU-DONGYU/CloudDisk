@@ -1,4 +1,3 @@
 /home/donkey/6_CloudDisk/SignModuleFile/build/CMakeFiles/SignModule.dir
-/home/donkey/6_CloudDisk/SignModuleFile/build/CMakeFiles/test.dir
 /home/donkey/6_CloudDisk/SignModuleFile/build/CMakeFiles/edit_cache.dir
 /home/donkey/6_CloudDisk/SignModuleFile/build/CMakeFiles/rebuild_cache.dir

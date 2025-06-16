@@ -16,12 +16,17 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
 #SignModule----------------------------------------------------------------
 add_executable(SignModule
     server.pb_skeleton.cc
+    ../CryptoUtil.cpp
     Sign.pb.cc
 )
 target_compile_options(SignModule PRIVATE
     -g
 )
 target_link_libraries(SignModule PRIVATE 
+    crypto
+    ssl
+    jwt
+    wfrest
     srpc
     lz4
     snappy
@@ -30,18 +35,18 @@ target_link_libraries(SignModule PRIVATE
 )
 
 
-add_executable(test
-    client.pb_skeleton.cc
-    Sign.pb.cc
-)
-target_compile_options(test PRIVATE
-    -g
-)
-target_link_libraries(test PRIVATE 
-    srpc
-    lz4
-    snappy
-    protobuf
-    workflow
-)
+# add_executable(test
+#     client.pb_skeleton.cc
+#     Sign.pb.cc
+# )
+# target_compile_options(test PRIVATE
+#     -g
+# )
+# target_link_libraries(test PRIVATE 
+#     srpc
+#     lz4
+#     snappy
+#     protobuf
+#     workflow
+# )
 

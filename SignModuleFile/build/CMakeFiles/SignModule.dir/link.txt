@@ -1,1 +1,1 @@
-/usr/bin/c++ CMakeFiles/SignModule.dir/server.pb_skeleton.cc.o CMakeFiles/SignModule.dir/Sign.pb.cc.o -o ../SignModule  -lsrpc -llz4 -lsnappy -lprotobuf -lworkflow 
+/usr/bin/c++ CMakeFiles/SignModule.dir/server.pb_skeleton.cc.o CMakeFiles/SignModule.dir/home/donkey/6_CloudDisk/CryptoUtil.cpp.o CMakeFiles/SignModule.dir/Sign.pb.cc.o -o ../SignModule  -lcrypto -lssl -ljwt -lwfrest -lsrpc -llz4 -lsnappy -lprotobuf -lworkflow 

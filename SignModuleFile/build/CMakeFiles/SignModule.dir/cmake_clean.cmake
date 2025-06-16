@@ -3,6 +3,8 @@ file(REMOVE_RECURSE
   "../SignModule.pdb"
   "CMakeFiles/SignModule.dir/Sign.pb.cc.o"
   "CMakeFiles/SignModule.dir/Sign.pb.cc.o.d"
+  "CMakeFiles/SignModule.dir/home/donkey/6_CloudDisk/CryptoUtil.cpp.o"
+  "CMakeFiles/SignModule.dir/home/donkey/6_CloudDisk/CryptoUtil.cpp.o.d"
   "CMakeFiles/SignModule.dir/server.pb_skeleton.cc.o"
   "CMakeFiles/SignModule.dir/server.pb_skeleton.cc.o.d"
 )

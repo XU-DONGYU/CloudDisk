@@ -129,26 +129,12 @@ SignModule/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/SignModule.dir/build.make CMakeFiles/SignModule.dir/build
 .PHONY : SignModule/fast
 
-#=============================================================================
-# Target rules for targets named test
-
-# Build rule for target.
-test: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test
-.PHONY : test
-
-# fast build rule for target.
-test/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/build
-.PHONY : test/fast
-
 Sign.pb.o: Sign.pb.cc.o
 .PHONY : Sign.pb.o
 
 # target to build an object file
 Sign.pb.cc.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/SignModule.dir/build.make CMakeFiles/SignModule.dir/Sign.pb.cc.o
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/Sign.pb.cc.o
 .PHONY : Sign.pb.cc.o
 
 Sign.pb.i: Sign.pb.cc.i
@@ -157,7 +143,6 @@ Sign.pb.i: Sign.pb.cc.i
 # target to preprocess a source file
 Sign.pb.cc.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/SignModule.dir/build.make CMakeFiles/SignModule.dir/Sign.pb.cc.i
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/Sign.pb.cc.i
 .PHONY : Sign.pb.cc.i
 
 Sign.pb.s: Sign.pb.cc.s
@@ -166,32 +151,31 @@ Sign.pb.s: Sign.pb.cc.s
 # target to generate assembly for a file
 Sign.pb.cc.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/SignModule.dir/build.make CMakeFiles/SignModule.dir/Sign.pb.cc.s
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/Sign.pb.cc.s
 .PHONY : Sign.pb.cc.s
 
-client.pb_skeleton.o: client.pb_skeleton.cc.o
-.PHONY : client.pb_skeleton.o
+home/donkey/6_CloudDisk/CryptoUtil.o: home/donkey/6_CloudDisk/CryptoUtil.cpp.o
+.PHONY : home/donkey/6_CloudDisk/CryptoUtil.o
 
 # target to build an object file
-client.pb_skeleton.cc.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/client.pb_skeleton.cc.o
-.PHONY : client.pb_skeleton.cc.o
+home/donkey/6_CloudDisk/CryptoUtil.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SignModule.dir/build.make CMakeFiles/SignModule.dir/home/donkey/6_CloudDisk/CryptoUtil.cpp.o
+.PHONY : home/donkey/6_CloudDisk/CryptoUtil.cpp.o
 
-client.pb_skeleton.i: client.pb_skeleton.cc.i
-.PHONY : client.pb_skeleton.i
+home/donkey/6_CloudDisk/CryptoUtil.i: home/donkey/6_CloudDisk/CryptoUtil.cpp.i
+.PHONY : home/donkey/6_CloudDisk/CryptoUtil.i
 
 # target to preprocess a source file
-client.pb_skeleton.cc.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/client.pb_skeleton.cc.i
-.PHONY : client.pb_skeleton.cc.i
+home/donkey/6_CloudDisk/CryptoUtil.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SignModule.dir/build.make CMakeFiles/SignModule.dir/home/donkey/6_CloudDisk/CryptoUtil.cpp.i
+.PHONY : home/donkey/6_CloudDisk/CryptoUtil.cpp.i
 
-client.pb_skeleton.s: client.pb_skeleton.cc.s
-.PHONY : client.pb_skeleton.s
+home/donkey/6_CloudDisk/CryptoUtil.s: home/donkey/6_CloudDisk/CryptoUtil.cpp.s
+.PHONY : home/donkey/6_CloudDisk/CryptoUtil.s
 
 # target to generate assembly for a file
-client.pb_skeleton.cc.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/client.pb_skeleton.cc.s
-.PHONY : client.pb_skeleton.cc.s
+home/donkey/6_CloudDisk/CryptoUtil.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SignModule.dir/build.make CMakeFiles/SignModule.dir/home/donkey/6_CloudDisk/CryptoUtil.cpp.s
+.PHONY : home/donkey/6_CloudDisk/CryptoUtil.cpp.s
 
 server.pb_skeleton.o: server.pb_skeleton.cc.o
 .PHONY : server.pb_skeleton.o
@@ -226,13 +210,12 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... SignModule"
-	@echo "... test"
 	@echo "... Sign.pb.o"
 	@echo "... Sign.pb.i"
 	@echo "... Sign.pb.s"
-	@echo "... client.pb_skeleton.o"
-	@echo "... client.pb_skeleton.i"
-	@echo "... client.pb_skeleton.s"
+	@echo "... home/donkey/6_CloudDisk/CryptoUtil.o"
+	@echo "... home/donkey/6_CloudDisk/CryptoUtil.i"
+	@echo "... home/donkey/6_CloudDisk/CryptoUtil.s"
 	@echo "... server.pb_skeleton.o"
 	@echo "... server.pb_skeleton.i"
 	@echo "... server.pb_skeleton.s"

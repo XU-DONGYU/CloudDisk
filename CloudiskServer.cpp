@@ -3,22 +3,15 @@
 
 #include "CloudiskServer.h"
 #include "CryptoUtil.h"
+#include "SignModuleFile/Sign.srpc.h"
+#include "SignModuleFile/Sign.pb.h"
+#include "workflow/WFFacilities.h"
 #include <wfrest/PathUtil.h>
 #include <workflow/MySQLResult.h>
 #include <workflow/Workflow.h>
-#include "workflow/WFFacilities.h"
-#include "Sign.srpc.h"
-
 
 using namespace wfrest;
 using namespace srpc;
-
-static WFFacilities::WaitGroup wait_group(1);
-
-void sig_handler(int signo)
-{
-	wait_group.done();
-}
 
 void CloudiskServer::register_modules()
 {
@@ -58,38 +51,45 @@ void CloudiskServer::register_signup_module()
     m_server.POST("/user/signup", [](const HttpReq *req, HttpResp *resp) {
         if (req->content_type() != APPLICATION_URLENCODED)
         {
+            resp->set_status(HttpStatusBadRequest);
             resp->String("unsupported type");
             return;
         }
 
         std::map<std::string, std::string> &params = req->form_kv();
-
         std::string username = params["username"];
         std::string password = params["password"];
-
         if (username.empty() || password.empty())
         {
+            resp->set_status(HttpStatusBadRequest);
             resp->String("username or password is empty");
             return;
         }
+#ifdef DEBUG
+        std::cout << "username: " << username;
+        std::cout << "; password: " << password << std::endl;
+#endif
 
-        std::string salt = CryptoUtil::generate_salt();
-        std::string hashed_password = CryptoUtil::hash_password(password, salt);
+        const char *ip = "127.0.0.1";
+        unsigned short port = 1412;
+        ::Sign::Sign::SRPCClient client(ip, port);
 
-        // 写入MySQL
-        std::string sql = "INSERT INTO tbl_user (username, password, salt) VALUES ('" + username + "', '" +
-                          hashed_password + "', '" + salt + "')";
-        std::string mysql_url = "mysql://root:123@localhost:3306/webnet";
-        resp->MySQL(mysql_url, sql, [resp](protocol::MySQLResultCursor *result) {
-            if (result->get_cursor_status())
-            {
-                resp->String("SUCCESS");
-            }
-            else
-            {
-                resp->String("signup failed");
-            }
-        });
+        ::Sign::SignupReq signup_req;
+        signup_req.set_username(username);
+        signup_req.set_password(password);
+        ::Sign::SignupResp signup_resp;
+        srpc::RPCSyncContext sync_ctx;
+        client.Signup(&signup_req,&signup_resp,&sync_ctx);
+
+        if(sync_ctx.success && signup_resp.status())
+        {
+            resp->String("SUCCESS");
+        }
+        else
+        {
+            resp->set_status(HttpStatusBadRequest);
+            resp->String("signup failed");
+        }
     });
 }
 
@@ -232,6 +232,7 @@ void CloudiskServer::register_userinfo_module()
         });
     });
 }
+
 void CloudiskServer::register_fileupload_module()
 {
     m_server.POST("/file/upload", [](const HttpReq *req, HttpResp *resp, SeriesWork *series_work) {
@@ -274,7 +275,7 @@ void CloudiskServer::register_fileupload_module()
         // 获取uid
         std::string sql = "SELECT id FROM tbl_user WHERE username = '" + username + "'";
         std::string mysql_url = "mysql://root:123@localhost:3306/webnet";
-        resp->MySQL(mysql_url, sql, [resp, req,username](protocol::MySQLResultCursor *result) {
+        resp->MySQL(mysql_url, sql, [resp, req, username](protocol::MySQLResultCursor *result) {
             if (result->get_cursor_status() != MYSQL_STATUS_GET_RESULT)
             {
                 resp->String("failed to get user id");
@@ -306,13 +307,16 @@ void CloudiskServer::register_fileupload_module()
                            "file of " + username + " : " + filename + " save to cloudisk\n");
                 std::string hashcode = CryptoUtil::hash_password(len_str, PathUtil::base(filename));
 
-                //printf("filename: %s, len: %d, hashcode: %s\n", filename.c_str(), len, hashcode.c_str());
+                // printf("filename: %s, len: %d, hashcode: %s\n", filename.c_str(), len, hashcode.c_str());
 
                 // 将文件信息写入数据库
-                std::string sql ="INSERT INTO tbl_file (uid, hashcode, filename, size, created_at, last_update) VALUES (" + std::to_string(uid) + ",'" + hashcode + "','" + PathUtil::base(filename) + "'," + len_str + ",NOW(),NOW())";
+                std::string sql =
+                    "INSERT INTO tbl_file (uid, hashcode, filename, size, created_at, last_update) VALUES (" +
+                    std::to_string(uid) + ",'" + hashcode + "','" + PathUtil::base(filename) + "'," + len_str +
+                    ",NOW(),NOW())";
                 std::string mysql_url = "mysql://root:123@localhost:3306/webnet";
                 resp->MySQL(mysql_url, sql, [resp](protocol::MySQLResultCursor *result2) {
-                    //printf("%d\n", result2->get_cursor_status());
+                    // printf("%d\n", result2->get_cursor_status());
                     if (result2->get_cursor_status() == MYSQL_STATUS_OK)
                     {
                         if (result2->get_affected_rows() > 0)
@@ -396,7 +400,8 @@ void CloudiskServer::register_filelist_module()
             }
 
             std::string file_sql =
-                "SELECT hashcode, filename, size, created_at , last_update FROM tbl_file WHERE uid = " + std::to_string(uid) + " ORDER BY created_at DESC LIMIT " + limit; // 添加限制条件
+                "SELECT hashcode, filename, size, created_at , last_update FROM tbl_file WHERE uid = " +
+                std::to_string(uid) + " ORDER BY created_at DESC LIMIT " + limit; // 添加限制条件
             std::string mysql_url = "mysql://root:123@localhost:3306/webnet";
             resp->MySQL(mysql_url, file_sql, [resp](protocol::MySQLResultCursor *file_result) {
                 printf("%d\n", file_result->get_cursor_status());
@@ -423,8 +428,6 @@ void CloudiskServer::register_filelist_module()
         });
     });
 }
-
-
 
 void CloudiskServer::register_filedownload_module()
 {
@@ -453,7 +456,8 @@ void CloudiskServer::register_filedownload_module()
             return;
         }
 
-        if(!req->has_query("filename")){
+        if (!req->has_query("filename"))
+        {
             resp->String("necessary parameter filename is missing");
         }
         std::string filename = req->query("filename");
@@ -467,7 +471,5 @@ void CloudiskServer::register_filedownload_module()
         // resp->set_header_pair("Content-Type","application/octet-stream");
         resp->set_header_pair("Content-Disposition", "attachment; filename=\"" + PathUtil::base(filename) + "\"");
         resp->File(filename);
-
-
     });
 }

@@ -18,6 +18,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
 
 # 生成的可执行程序
 add_executable(server
+    SignModuleFile/Sign.pb.cc
     CloudiskServer.cpp
     CryptoUtil.cpp
     main.cpp
@@ -26,6 +27,7 @@ add_executable(server
 #设置编译选项
 target_compile_options(server PRIVATE
     -g
+    -DDEBUG
 )
 
 # -lcrypto -lssl -ljwt -lwfrest
@@ -34,17 +36,6 @@ target_link_libraries(server PRIVATE
     ssl
     jwt
     wfrest
-)
-
-#SignModule----------------------------------------------------------------
-add_executable(SignModule
-    server.pb_skeleton.cc
-    Sign.pb.cc
-)
-target_compile_options(SignModule PRIVATE
-    -g
-)
-target_link_libraries(SignModule PRIVATE 
     srpc
     lz4
     snappy
@@ -52,19 +43,4 @@ target_link_libraries(SignModule PRIVATE
     workflow
 )
 
-
-add_executable(test
-    client.pb_skeleton.cc
-    Sign.pb.cc
-)
-target_compile_options(test PRIVATE
-    -g
-)
-target_link_libraries(test PRIVATE 
-    srpc
-    lz4
-    snappy
-    protobuf
-    workflow
-)
 
