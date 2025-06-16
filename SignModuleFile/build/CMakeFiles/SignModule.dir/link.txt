@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/SignModule.dir/server.pb_skeleton.cc.o CMakeFiles/SignModule.dir/Sign.pb.cc.o -o ../SignModule  -lsrpc -llz4 -lsnappy -lprotobuf -lworkflow 

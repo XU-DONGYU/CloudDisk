@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/test.dir/client.pb_skeleton.cc.o CMakeFiles/test.dir/Sign.pb.cc.o -o ../test  -lsrpc -llz4 -lsnappy -lprotobuf -lworkflow 
