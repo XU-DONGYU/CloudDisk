@@ -1,12 +1,29 @@
-#include "../CryptoUtil.h"
-#include "Sign.srpc.h"
-#include "workflow/WFFacilities.h"
+#include "../CryptoUtil.h"//hash_password, generate_salt, verify_token
+#include "Sign.srpc.h"//srpc service definition
+#include "workflow/WFFacilities.h"//wait_group
+#include "workflow/MySQLMessage.h"
+#include "workflow/MySQLResult.h"
+#include "workflow/Workflow.h"
+#include "workflow/WFTaskFactory.h"//timer task factory
+#include "wfrest/HttpServer.h"
+#include "ppconsul/agent.h"//agent for service registration and health check
+
 #include <iostream>
-#include <workflow/MySQLMessage.h>
-#include <workflow/MySQLResult.h>
-#include <workflow/Workflow.h>
 
 using namespace srpc;
+using namespace ppconsul::agent;
+using ppconsul::Consul;
+
+static void timer_callback(WFTimerTask *task)
+{
+    SeriesWork *series_work = series_of(task);
+    Agent *agent = static_cast<Agent *>(series_work->get_context());
+    agent->servicePass("SignService1","SignService1 keep alive");
+    agent->servicePass("SignService2","SignService2 keep alive");
+    agent->servicePass("SignService3","SignService3 keep alive");
+    WFTimerTask *new_task = WFTaskFactory::create_timer_task(7,0,timer_callback);
+    series_work->push_back(new_task);
+}
 
 static WFFacilities::WaitGroup wait_group(1);
 void sig_handler(int signo)
@@ -66,6 +83,40 @@ int main()
 
     if (server.start(port) == 0)
     {
+        // 指定注册中心 Consul 的ip地址，端口和数据中心
+        Consul consul { "http://127.0.0.1:8500", ppconsul::kw::dc="dc1" };
+        // 创建代理
+        Agent agent { consul };
+        // 注册服务 
+        agent.registerService(
+            kw::id = "SignService1",
+            kw::name = "SignService",
+            kw::address = "127.0.0.1",
+            kw::port = 1412,
+            kw::check = TtlCheck(std::chrono::seconds{ 10 })
+        );
+        agent.registerService(
+            kw::id = "SignService2",
+            kw::name = "SignService",
+            kw::address = "127.0.0.1",
+            kw::port = 1413,
+            kw::check = TtlCheck(std::chrono::seconds{ 10 })
+        );
+        agent.registerService(
+            kw::id = "SignService3",
+            kw::name = "SignService",
+            kw::address = "127.0.0.1",
+            kw::port = 1414,
+            kw::check = TtlCheck(std::chrono::seconds{ 10 })
+        );
+
+        
+        // 定时发送心跳包
+        WFTimerTask* timerTask = WFTaskFactory::create_timer_task(7, 0, timer_callback);
+
+        SeriesWork* series = Workflow::create_series_work(timerTask, nullptr);
+        series->set_context(&agent);    // 设置序列的上下文
+        series->start();
         wait_group.wait();
         server.stop();
     }

@@ -32,6 +32,7 @@ target_link_libraries(SignModule PRIVATE
     snappy
     protobuf
     workflow
+    ppconsul
 )
 
 
